@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState, useEffect, useRef } from 'react';
+import './globals.css';
 
 type ExplainResult = {
   plain: string;
@@ -114,7 +115,9 @@ export default function HomePage() {
   ];
 
   return (
-    <main className="min-h-screen w-full bg-neutral-950 text-neutral-100">
+    <main className="min-h-screen w-full text-neutral-100 bg-[#1a1a1a]" style={{
+      background: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 119, 130, 0.3), transparent), #1a1a1a'
+    }}>
       <div className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-14">
         {/* Header */}
         <header className="space-y-3">
@@ -133,7 +136,7 @@ export default function HomePage() {
         </header>
 
         {/* Input */}
-        <section className="mt-8 rounded-2xl border border-neutral-800 bg-neutral-900/40 p-4 sm:p-5">
+        <section className="gradient-border mt-8 rounded-2xl p-4 sm:p-5 bg-black">
           <label className="mb-2 block text-sm font-medium text-neutral-200">
             What do you want explained?
           </label>
@@ -146,18 +149,6 @@ export default function HomePage() {
           />
 
           <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex flex-wrap gap-2">
-              {examples.map((ex) => (
-                <button
-                  key={ex}
-                  type="button"
-                  onClick={() => onUseExample(ex)}
-                  className="rounded-full border border-neutral-800 bg-neutral-950/40 px-3 py-1 text-xs text-neutral-300 hover:bg-neutral-900"
-                >
-                  {ex}
-                </button>
-              ))}
-            </div>
 
             <button
               type="button"
@@ -182,59 +173,67 @@ export default function HomePage() {
           ) : null}
         </section>
 
-        {/* Results */}
-        <section ref={resultsRef} className="mt-6 space-y-4">
-          {SECTION_META.map((s) => {
-            const text = result?.[s.key] ?? '';
-            const isCopied = copiedKey === s.key;
-
-            return (
-              <div
-                key={s.key}
-                className="rounded-2xl border border-neutral-800 bg-neutral-900/30 p-4 sm:p-5"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h2 className="text-base font-semibold">{s.title}</h2>
-                    <p className="mt-1 text-xs text-neutral-400">{s.subtitle}</p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => onCopy(s.key)}
-                    disabled={!result}
-                    className="rounded-xl border border-neutral-800 bg-neutral-950/40 px-3 py-1.5 text-xs text-neutral-200 hover:bg-neutral-900 disabled:cursor-not-allowed disabled:opacity-40"
-                    title={result ? 'Copy to clipboard' : 'Generate an explanation first'}
-                  >
-                    {isCopied ? 'Copied ✓' : 'Copy'}
-                  </button>
-                </div>
-
-                <div className="mt-3 rounded-xl border border-neutral-800 bg-neutral-950/40 p-3">
-                  {result ? (
-                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-neutral-100">
-                      {text}
-                    </p>
-                  ) : (
-                    <p className="text-sm text-neutral-500">
-                      Your result will appear here.
-                    </p>
-                  )}
-                </div>
-
+        <div className="mt-3">
+        <div className="flex flex-wrap gap-2">
+              {examples.map((ex) => (
                 <button
+                  key={ex}
                   type="button"
-                  onClick={() => onCopy(s.key)}
-                  disabled={!result}
-                  className="rounded-xl border border-neutral-800 bg-neutral-950/40 px-3 py-1.5 text-xs text-neutral-200 hover:bg-neutral-900 disabled:cursor-not-allowed disabled:opacity-40"
-                  title={result ? 'Copy to clipboard' : 'Generate an explanation first'}
+                  onClick={() => onUseExample(ex)}
+                  className="rounded-full border border-neutral-800 bg-neutral-950/40 px-3 py-1 text-xs text-neutral-300 hover:bg-neutral-900"
                 >
-                  {isCopied ? 'Copied ✓' : 'Copy'}
+                  {ex}
                 </button>
-              </div>
-            );
-          })}
-        </section>
+              ))}
+            </div>
+        </div>
+
+        {/* Results */}
+        {
+          result && (
+            <section ref={resultsRef} className="mt-6 space-y-4">
+              {SECTION_META.map((s) => {
+                const text = result?.[s.key] ?? '';
+                const isCopied = copiedKey === s.key;
+
+                return (
+                  <div
+                    key={s.key}
+                    className="rounded-2xl border border-neutral-800 bg-neutral-900/30 p-4 sm:p-5"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h2 className="text-base font-semibold">{s.title}</h2>
+                        <p className="mt-1 text-xs text-neutral-400">{s.subtitle}</p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => onCopy(s.key)}
+                        disabled={!result}
+                        className="rounded-xl border border-neutral-800 bg-neutral-950/40 px-3 py-1.5 text-xs text-neutral-200 hover:bg-neutral-900 disabled:cursor-not-allowed disabled:opacity-40"
+                        title={result ? 'Copy to clipboard' : 'Generate an explanation first'}
+                      >
+                        {isCopied ? 'Copied ✓' : 'Copy'}
+                      </button>
+                    </div>
+
+                    <div className="mt-3 rounded-xl border border-neutral-800 bg-neutral-950/40 p-3">
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-neutral-100">{text}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </section>
+          )
+        } 
+        {
+          !result && (
+            <section ref={resultsRef} className="mt-6 space-y-4">
+              <p className="text-sm text-neutral-500">Your result will appear here.</p>
+            </section>
+          )
+        }
       </div>
     </main>
   );
