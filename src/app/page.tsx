@@ -22,8 +22,21 @@ const SECTION_META: { key: SectionKey; title: string; subtitle: string }[] = [
   { key: 'tweet', title: 'Tweet', subtitle: 'Short and sharp' },
 ];
 
-function copyToClipboard(text: string) {
-  return navigator.clipboard.writeText(text);
+async function copyToClipboard(text: string): Promise<void> {
+  // Modern clipboard API (requires secure context)
+  if (navigator?.clipboard?.writeText) {
+    return navigator.clipboard.writeText(text);
+  }
+  
+  // Fallback for older browsers or non-secure contexts
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textarea);
 }
 
 export default function HomePage() {
@@ -70,7 +83,6 @@ export default function HomePage() {
       setIsLoading(false);
     }
   }
-  
 
   async function onCopy(key: SectionKey) {
     if (!result) return;
@@ -209,6 +221,16 @@ export default function HomePage() {
                     </p>
                   )}
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => onCopy(s.key)}
+                  disabled={!result}
+                  className="rounded-xl border border-neutral-800 bg-neutral-950/40 px-3 py-1.5 text-xs text-neutral-200 hover:bg-neutral-900 disabled:cursor-not-allowed disabled:opacity-40"
+                  title={result ? 'Copy to clipboard' : 'Generate an explanation first'}
+                >
+                  {isCopied ? 'Copied ✓' : 'Copy'}
+                </button>
               </div>
             );
           })}
