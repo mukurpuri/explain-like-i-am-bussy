@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useMemo, useState, useEffect, useRef } from 'react';
+
 import './globals.css';
+import { ArrowRightIcon, CopyIcon, Loader2Icon } from 'lucide-react';
 
 type ExplainResult = {
   plain: string;
@@ -99,13 +101,6 @@ export default function HomePage() {
     setCopiedKey(null);
   }
 
-  function onClear() {
-    setInput('');
-    setResult(null);
-    setErrorMsg(null);
-    setCopiedKey(null);
-  }
-
   const examples = [
     'Explain inflation',
     'Explain Bitcoin',
@@ -115,56 +110,43 @@ export default function HomePage() {
   ];
 
   return (
-    <main className="min-h-screen w-full text-neutral-100 bg-[#1a1a1a]" style={{
+    <main className="min-h-screen w-full text-neutral-100 bg-[#1a1a1a] pb-28" style={{
       background: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 119, 130, 0.3), transparent), #1a1a1a'
     }}>
-      <div className="mx-auto w-full max-w-3xl px-4 py-10 sm:py-14">
+      <div className="mx-auto w-full max-w-4xl px-6 md:px-4 py-10 sm:py-14">
         {/* Header */}
-        <header className="space-y-3">
-          <div className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-3 py-1 text-xs text-neutral-300">
+        <header className="space-y-3 text-center">
+          {/* <div className="inline-flex items-center gap-2 rounded-full bg-neutral-900 px-3 py-1 text-xs text-neutral-300">
             <span className="h-2 w-2 rounded-full bg-neutral-400" />
             <span>Understand anything in 30 seconds</span>
-          </div>
+          </div> */}
 
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Explain Like I’m Busy
+            Explain Like I&apos;m Busy
           </h1>
 
-          <p className="text-sm leading-relaxed text-neutral-300 sm:text-base">
-            Paste a topic. Get six versions: plain English, 30-second summary, kid mode, manager mode, LinkedIn post, and a tweet.
+          <p className="text-sm leading-relaxed text-neutral-300 sm:text-base font-semibold">
+            Get six versions: plain English, 30-second summary, kid mode, manager mode, LinkedIn post, and a tweet.
           </p>
         </header>
 
         {/* Input */}
         <section className="gradient-border mt-8 rounded-2xl p-4 sm:p-5 bg-black">
-          <label className="mb-2 block text-sm font-medium text-neutral-200">
-            What do you want explained?
-          </label>
-
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="e.g., Explain quantum computing"
-            className="min-h-[120px] w-full resize-y rounded-xl border border-neutral-800 bg-neutral-950/60 px-4 py-3 text-sm text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-600"
+            className="text-xl resize-none border-none min-h-[50px] w-full rounded-xl border-neutral-800 bg-neutral-950/60 px-4 py-3 text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:ring-0"
           />
 
-          <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-
-            <button
-              type="button"
-              onClick={onClear}
-              className="inline-flex items-center justify-center rounded-xl bg-neutral-100 px-4 py-2 text-sm font-semibold text-neutral-950 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Clear
-            </button>
-
+          <div className="mt-3 flex flex-row gap-3 items-center justify-end">
             <button
               type="button"
               onClick={onExplain}
               disabled={!canExplain}
-              className="inline-flex items-center justify-center rounded-xl bg-neutral-100 px-4 py-2 text-sm font-semibold text-neutral-950 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center justify-center bg-neutral-100 p-2 w-10 h-10 text-center rounded-full text-xl font-semibold text-neutral-950 disabled:cursor-not-allowed disabled:opacity-50 focus:outline-none"
             >
-              {isLoading ? 'Explaining…' : 'Explain like I’m busy 🚀'}
+              {isLoading ? <Loader2Icon className="w-4 h-4 animate-spin" /> : <ArrowRightIcon className="w-4 h-4" />}
             </button>
           </div>
 
@@ -173,7 +155,7 @@ export default function HomePage() {
           ) : null}
         </section>
 
-        <div className="mt-3">
+        {/* <div className="mt-3">
         <div className="flex flex-wrap gap-2">
               {examples.map((ex) => (
                 <button
@@ -186,12 +168,12 @@ export default function HomePage() {
                 </button>
               ))}
             </div>
-        </div>
-
-        {/* Results */}
-        {
+        </div> */} 
+      </div>
+      {/* Results */}
+      {
           result && (
-            <section ref={resultsRef} className="mt-6 space-y-4">
+            <section ref={resultsRef} className="mt-6 space-y-4 flex flex-row gap-6 flex-wrap max-w-7xl mx-auto px-6 md:px-0">
               {SECTION_META.map((s) => {
                 const text = result?.[s.key] ?? '';
                 const isCopied = copiedKey === s.key;
@@ -199,7 +181,7 @@ export default function HomePage() {
                 return (
                   <div
                     key={s.key}
-                    className="rounded-2xl border border-neutral-800 bg-neutral-900/30 p-4 sm:p-5"
+                    className="mini-card"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
@@ -214,27 +196,19 @@ export default function HomePage() {
                         className="rounded-xl border border-neutral-800 bg-neutral-950/40 px-3 py-1.5 text-xs text-neutral-200 hover:bg-neutral-900 disabled:cursor-not-allowed disabled:opacity-40"
                         title={result ? 'Copy to clipboard' : 'Generate an explanation first'}
                       >
-                        {isCopied ? 'Copied ✓' : 'Copy'}
+                        {isCopied ? 'Copied ✓' : <CopyIcon className="w-4 h-4" />}
                       </button>
                     </div>
 
                     <div className="mt-3 rounded-xl border border-neutral-800 bg-neutral-950/40 p-3">
-                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-neutral-100">{text}</p>
+                      <p className="whitespace-pre-wrap leading-relaxed text-neutral-100 text-xl">{text}</p>
                     </div>
                   </div>
                 );
               })}
             </section>
           )
-        } 
-        {
-          !result && (
-            <section ref={resultsRef} className="mt-6 space-y-4">
-              <p className="text-sm text-neutral-500">Your result will appear here.</p>
-            </section>
-          )
         }
-      </div>
     </main>
   );
 }
