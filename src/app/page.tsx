@@ -12,17 +12,18 @@ type ExplainResult = {
   manager: string;
   linkedin: string;
   tweet: string;
+  icon?: string;
 };
 
 type SectionKey = keyof ExplainResult;
 
-const SECTION_META: { key: SectionKey; title: string; subtitle: string }[] = [
-  { key: 'plain', title: 'Plain English', subtitle: 'Simple, clear explanation' },
-  { key: 'sec30', title: '30-second version', subtitle: 'Fast, punchy summary' },
-  { key: 'kid10', title: 'Like I am 10', subtitle: 'Kid-friendly clarity' },
-  { key: 'manager', title: 'For a non-tech manager', subtitle: 'Business-safe wording' },
-  { key: 'linkedin', title: 'LinkedIn post', subtitle: 'Ready to paste' },
-  { key: 'tweet', title: 'Tweet', subtitle: 'Short and sharp' },
+const SECTION_META: { key: SectionKey; title: string; subtitle: string, icon?: string }[] = [
+  { key: 'plain', title: 'Plain English', subtitle: 'Simple, clear explanation', icon: "/english.png" },
+  { key: 'sec30', title: '30-second version', subtitle: 'Fast, punchy summary', icon: "/30min.png" },
+  { key: 'kid10', title: 'Like I am 10', subtitle: 'Kid-friendly clarity', icon: "/10yearold.png" },
+  { key: 'manager', title: 'For a non-tech manager', subtitle: 'Business-safe wording', icon: "/kanye.png" },
+  { key: 'linkedin', title: 'LinkedIn post', subtitle: 'Ready to paste', icon: "/linked.png" },
+  { key: 'tweet', title: 'Tweet', subtitle: 'Short and sharp', icon: "/x.png" },
 ];
 
 async function copyToClipboard(text: string): Promise<void> {
@@ -89,7 +90,7 @@ export default function HomePage() {
 
   async function onCopy(key: SectionKey) {
     if (!result) return;
-    await copyToClipboard(result[key]);
+    await copyToClipboard(result[key] ?? '');
     setCopiedKey(key);
     window.setTimeout(() => setCopiedKey(null), 1200);
   }
@@ -155,25 +156,23 @@ export default function HomePage() {
           ) : null}
         </section>
 
-        {/* <div className="mt-3">
-        <div className="flex flex-wrap gap-2">
+        <div className="mt-3">
+        <div className="flex flex-wrap gap-2 justify-center">
               {examples.map((ex) => (
                 <button
                   key={ex}
                   type="button"
                   onClick={() => onUseExample(ex)}
-                  className="rounded-full border border-neutral-800 bg-neutral-950/40 px-3 py-1 text-xs text-neutral-300 hover:bg-neutral-900"
+                  className="rounded-full border border-neutral-800 bg-neutral-950/40 px-3 py-1 text-sm text-neutral-300 hover:bg-neutral-900"
                 >
                   {ex}
                 </button>
               ))}
             </div>
-        </div> */} 
+        </div>
       </div>
       {/* Results */}
-      {
-          result && (
-            <section ref={resultsRef} className="mt-6 space-y-4 flex flex-row gap-6 flex-wrap max-w-7xl mx-auto px-6 md:px-0">
+      <section ref={resultsRef} className="mt-6 space-y-4 flex flex-row gap-6 flex-wrap max-w-7xl mx-auto px-6 md:px-0">
               {SECTION_META.map((s) => {
                 const text = result?.[s.key] ?? '';
                 const isCopied = copiedKey === s.key;
@@ -184,9 +183,12 @@ export default function HomePage() {
                     className="mini-card"
                   >
                     <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                      <img src={s.icon} alt={s.title} className="w-10 h-10 rounded-xl object-cover" /> {/* eslint-disable-line @next/next/no-img-element */}
                       <div>
                         <h2 className="text-base font-semibold">{s.title}</h2>
                         <p className="mt-1 text-xs text-neutral-400">{s.subtitle}</p>
+                      </div>
                       </div>
 
                       <button
@@ -200,15 +202,13 @@ export default function HomePage() {
                       </button>
                     </div>
 
-                    <div className="mt-3 rounded-xl border border-neutral-800 bg-neutral-950/40 p-3">
+                    <div className="mt-3 rounded-xl border border-neutral-800 bg-neutral-950/40 p-3 min-h-40">
                       <p className="whitespace-pre-wrap leading-relaxed text-neutral-100 text-xl">{text}</p>
                     </div>
                   </div>
                 );
               })}
             </section>
-          )
-        }
     </main>
   );
 }
